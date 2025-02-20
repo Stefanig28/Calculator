@@ -1,19 +1,35 @@
+import pytest
+import queue
+from src.lexer import Token, TokenType
+from src.main import shunting_yard_algorithm
+
+@pytest.mark.parametrize(
+    "tokens, expected",
+    [
+        ([], []),
+        (
+            [
+                Token(TokenType.LPAREN, "("),
+                Token(TokenType.NUMBER, "3"),
+                Token(TokenType.PLUS, "+"),
+                Token(TokenType.NUMBER, "4"),
+                Token(TokenType.RPAREN, ")"),
+                Token(TokenType.TIMES, "*"),
+                Token(TokenType.NUMBER, "2")
+            ],
+            [
+                Token(TokenType.NUMBER, "3"),
+                Token(TokenType.NUMBER, "4"),
+                Token(TokenType.PLUS, "+"),
+                Token(TokenType.NUMBER, "2"),
+                Token(TokenType.TIMES, "*")
+            ]
+        ),
+    ]
+)
+def test_shunting_yard_algorithm(tokens, expected):
+    content = shunting_yard_algorithm(tokens, q=queue.Queue(), stack=[])
+    assert content == expected
 
 
-"""
-def test_sum():
-    result = main('1 + 2')
-    assert result == 3
-
-def test_subtraction():
-    result = main('2 - 1')
-    assert result == 1
-
-def test_multiplication():
-    result = main('2 * 3')
-    assert result == 6
-
-def test_division():
-    result = main('3 / 2')
-    assert result == 1.5
-    """
+ 

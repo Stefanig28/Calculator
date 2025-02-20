@@ -2,13 +2,17 @@ from collections.abc import Iterator
 import enum
 
 class TokenType(enum.Enum):
-    NUMBER = "NUMBER"
-    PLUS = "PLUS"
-    MINUS = "MINUS"
-    TIMES = "TIMES"
-    DIVIDE = "DIVIDE"
-    LPAREN = "LPAREN"
-    RPAREN = "RPAREN"
+    NUMBER = ("NUMBER", 0)
+    PLUS = ("PLUS", 1)
+    MINUS = ("MINUS", 1)
+    TIMES = ("TIMES", 2)
+    DIVIDE = ("DIVIDE", 2)
+    LPAREN = ("LPAREN", 0)
+    RPAREN = ("RPAREN", 0)
+
+    def __init__(self, value, precedence):
+        self._value_ = value
+        self.precedence = precedence
 
 class Token:
     def __init__(self, type: TokenType, value: str):
