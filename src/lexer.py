@@ -15,6 +15,11 @@ class Token:
         self.type = type
         self.value = value
 
+    def __eq__(self, other):
+        if isinstance(other, Token):
+            return self.type == other.type and self.value == other.value
+        return False
+
 def lex(payload: Iterator[str]) -> Iterator[Token]:
 
     for idx, c in enumerate(payload):
@@ -42,7 +47,9 @@ def lex(payload: Iterator[str]) -> Iterator[Token]:
         
 def _handle_followup_characters(next_char: str) -> Iterator[Token]:
 
-    if next_char == "+":
+    if next_char in _NUMERIC_CHARACTERS or next_char in _SPACES:
+        return
+    elif next_char == "+":
         yield Token(TokenType.PLUS, next_char)
     elif next_char == "-":
         yield Token(TokenType.MINUS, next_char)
@@ -54,8 +61,6 @@ def _handle_followup_characters(next_char: str) -> Iterator[Token]:
         yield Token(TokenType.LPAREN, next_char)
     elif next_char == ")":
         yield Token(TokenType.RPAREN, next_char)
-    elif next_char in _SPACES:
-        return
     else:
         raise ValueError(f"Unexpected character after number: {next_char}")
 
