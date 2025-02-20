@@ -1,6 +1,7 @@
 from collections.abc import Iterator
 import enum
 
+
 class TokenType(enum.Enum):
     NUMBER = ("NUMBER", 0)
     PLUS = ("PLUS", 1)
@@ -14,6 +15,7 @@ class TokenType(enum.Enum):
         self._value_ = value
         self.precedence = precedence
 
+
 class Token:
     def __init__(self, type: TokenType, value: str):
         self.type = type
@@ -24,13 +26,13 @@ class Token:
             return self.type == other.type and self.value == other.value
         return False
 
-def lex(payload: Iterator[str]) -> Iterator[Token]:
 
+def lex(payload: Iterator[str]) -> Iterator[Token]:
     for idx, c in enumerate(payload):
         if c == "+":
             yield Token(TokenType.PLUS, c)
         elif c == "-":
-            yield Token(TokenType.MINUS, c) 
+            yield Token(TokenType.MINUS, c)
         elif c == "*":
             yield Token(TokenType.TIMES, c)
         elif c == "/":
@@ -47,10 +49,9 @@ def lex(payload: Iterator[str]) -> Iterator[Token]:
             yield from _handle_followup_characters(next_char)
         else:
             raise ValueError(_ERROR_MSG.format(character=c, index=idx))
-        
-        
-def _handle_followup_characters(next_char: str) -> Iterator[Token]:
 
+
+def _handle_followup_characters(next_char: str) -> Iterator[Token]:
     if next_char in _NUMERIC_CHARACTERS or next_char in _SPACES:
         return
     elif next_char == "+":
@@ -67,6 +68,7 @@ def _handle_followup_characters(next_char: str) -> Iterator[Token]:
         yield Token(TokenType.RPAREN, next_char)
     else:
         raise ValueError(f"Unexpected character after number: {next_char}")
+
 
 def _lex_numeric(payload: Iterator[str], c: str) -> tuple[float | int, str]:
     number = c

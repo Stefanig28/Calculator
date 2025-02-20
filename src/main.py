@@ -1,8 +1,10 @@
 import queue
-from src.lexer import Token, TokenType
+from src.lexer import Token, TokenType, lex
 
 
-def shunting_yard_algorithm(tokens: list[Token], q: queue.Queue, stack: list) -> list[queue.Queue]:
+def shunting_yard_algorithm(tokens: list[Token]) -> list[queue.Queue]:
+    q = queue.Queue()
+    stack = []
 
     for token in tokens:
         if token.type == TokenType.NUMBER:
@@ -15,7 +17,9 @@ def shunting_yard_algorithm(tokens: list[Token], q: queue.Queue, stack: list) ->
             if stack:
                 stack.pop()
             else:
-                raise ValueError("Mismatched parentheses: no opening parenthesis found.")
+                raise ValueError(
+                    "Mismatched parentheses: no opening parenthesis found."
+                )
         else:
             while stack and stack[-1].type.precedence >= token.type.precedence:
                 q.put(stack.pop())
@@ -24,13 +28,32 @@ def shunting_yard_algorithm(tokens: list[Token], q: queue.Queue, stack: list) ->
     while stack:
         q.put(stack.pop())
 
-    return list(q.queue) 
+    return list(q.queue)
 
-def main(tokens: list[queue.Queue]):
+
+def main(tokens: list[queue.Queue]) -> int:
     stack = []
 
     for token in tokens:
-        
+        if token.type == TokenType.NUMBER:
+            stack.append(token.value)
+        else:
+            second = stack.pop()
+            first = stack.pop()
+
+            if token.value == "+":
+                result = first + second
+            elif token.value == "-":
+                result = first - second
+            elif token.value == "*":
+                result = first * second
+            elif token.value == "/":
+                result = first / second
+
+            stack.append(result)
+
+    return stack[0]
+
 
 def _cli() -> None:
     import argparse
@@ -39,9 +62,13 @@ def _cli() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("-calc", dest="calculator", type=str)
     args = parser.parse_args()
-    code = main(args.calculator)
-    sys.exit(code)
+
+    tokens = lex(iter(args.calculator))
+    result = main(shunting_yard_algorithm(tokens))
+
+    print(result)
+    sys.exit(0)
+
 
 if __name__ == "__main__":
     _cli()
-
